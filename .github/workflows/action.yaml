@@ -1,0 +1,34 @@
+name: Deploy my Lambda Function
+
+on:
+  push:
+    branches:
+      - main
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Code
+        uses: actions/checkout@v2
+      - name: Set up ython 
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install libraries 
+        run: |
+            cd function
+            python -m pip install --upgrade pip # Pip will define all the libraies which are defined in the requirements.txt file
+            if [ -f requirements.txt ]; then pip install -r requirements.txt -t .; fi
+      - name: Create zip bundle  # Create the zip bundle
+        run: |
+            cd function
+            zip -r ../${{ github.sha }}.zip.
+      - name: Archive artifact      # Archives the Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: zipped-bundle 
+          path: ${{ github.sha }}.zip 
+            
+          
+  
